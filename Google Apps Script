@@ -1,0 +1,225 @@
+// ============================================
+// SCRIPT GOOGLE APPS SCRIPT - VERSÃO COM MULTIMEDIA
+// ============================================
+
+const SPREADSHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
+
+function test() {
+  Logger.log('Script funcionando!');
+}
+
+// Função para obter lista de convidados E multimedia
+function doGet(e) {
+  try {
+    // Se tem parâmetro action=submit, processar como POST
+    if (e.parameter.action === 'submit') {
+      return handleSubmit(e.parameter);
+    }
+
+    // Retornar lista de convidados + multimedia
+    const guestSheet =
+      SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Convidados');
+    const guestData = guestSheet.getDataRange().getValues();
+
+    const guests = {};
+    for (let i = 1; i < guestData.length; i++) {
+      const phone = normalizePhone(guestData[i][0].toString());
+      if (phone) {
+        guests[phone] = {
+          name: guestData[i][1],
+          maxGuests: parseInt(guestData[i][2]) || 1,
+          confirmed: guestData[i][3] === 'SIM',
+        };
+      }
+    }
+
+    // Buscar dados de multimedia
+    const multimedia = getMultimediaData();
+
+    return ContentService.createTextOutput(
+      JSON.stringify({
+        success: true,
+        guests: guests,
+        multimedia: multimedia,
+      }),
+    ).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: false, error: error.toString() }),
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Buscar dados de multimedia
+function getMultimediaData() {
+  try {
+    let multSheet =
+      SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Multimedia');
+
+    // Se a aba não existe, criar com dados padrão
+    if (!multSheet) {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      multSheet = ss.insertSheet('Multimedia');
+      multSheet.appendRow(['Tipo', 'URL', 'Descrição']);
+      multSheet.appendRow([
+        'musica',
+        'https://drive.google.com/file/d/1Ih1Y1p5RR4a2I61pcJN7H8cj8mqntKE4/view?usp=sharing',
+        'Música de fundo',
+      ]);
+      multSheet.appendRow([
+        'foto',
+        'https://unsplash.com/pt-br/fotografias/alianca-de-casamento-dourada-no-textil-branco-8vaQKYnawHw',
+        'Foto padrão 1',
+      ]);
+      multSheet.appendRow([
+        'foto',
+        'https://unsplash.com/pt-br/fotografias/fotografia-em-tons-de-cinza-do-homem-e-da-mulher-desenham-o-coracao-na-areia-UA3zSV9ze8U',
+        'Foto padrão 2',
+      ]);
+    }
+
+    const data = multSheet.getDataRange().getValues();
+    const multimedia = {
+      musicas: [],
+      fotos: [],
+    };
+
+    for (let i = 1; i < data.length; i++) {
+      const tipo = data[i][0].toString().toLowerCase();
+      const url = data[i][1].toString();
+      const descricao = data[i][2].toString();
+
+      if (tipo === 'musica' && url) {
+        multimedia.musicas.push({ url: url, descricao: descricao });
+      } else if (tipo === 'foto' && url) {
+        multimedia.fotos.push({ url: url, descricao: descricao });
+      }
+    }
+
+    return multimedia;
+  } catch (error) {
+    Logger.log('Erro ao buscar multimedia: ' + error);
+    return { musicas: [], fotos: [] };
+  }
+}
+
+// Função para receber confirmações via POST
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    return processConfirmation(data);
+  } catch (error) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: false, error: error.toString() }),
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Processar confirmação via GET (solução CORS)
+function handleSubmit(params) {
+  try {
+    const data = JSON.parse(decodeURIComponent(params.data));
+    return processConfirmation(data);
+  } catch (error) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: false, error: error.toString() }),
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Processar a confirmação
+function processConfirmation(data) {
+  try {
+    let confirmSheet =
+      SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Confirmações');
+
+    if (!confirmSheet) {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      confirmSheet = ss.insertSheet('Confirmações');
+      confirmSheet.appendRow([
+        'Data/Hora',
+        'Telefone',
+        'Nome',
+        'Vai_Comparecer',
+        'Total_Pessoas',
+        'Acompanhantes',
+        'Restrições',
+        'Mensagem',
+      ]);
+    }
+
+    confirmSheet.appendRow([
+      new Date(),
+      data.phone,
+      data.name,
+      data.attendance === 'yes' ? 'SIM' : 'NÃO',
+      data.numAccompanists,
+      data.accompanists.join(', '),
+      data.dietary || '',
+      data.message || '',
+    ]);
+
+    updateGuestStatus(data.phone);
+    sendNotificationEmail(data);
+
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: true }),
+    ).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: false, error: error.toString() }),
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Atualizar status do convidado
+function updateGuestStatus(phone) {
+  const sheet =
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Convidados');
+  const data = sheet.getDataRange().getValues();
+  const normalizedPhone = normalizePhone(phone);
+
+  for (let i = 1; i < data.length; i++) {
+    if (normalizePhone(data[i][0].toString()) === normalizedPhone) {
+      sheet.getRange(i + 1, 4).setValue('SIM');
+      break;
+    }
+  }
+}
+
+// Normalizar telefone
+function normalizePhone(phone) {
+  return phone
+    .toString()
+    .replace(/[\s\-+]/g, '')
+    .replace(/^351/, '');
+}
+
+// Enviar email de notificação
+function sendNotificationEmail(data) {
+  try {
+    const email = 'gilsenio9413@gmail.com';
+    const subject = '🎉 Nova Confirmação de Presença - Casamento';
+
+    const body = `
+Nova confirmação recebida:
+
+👤 Nome: ${data.name}
+📱 Telefone: ${data.phone}
+✅ Vai comparecer: ${data.attendance === 'yes' ? 'SIM' : 'NÃO'}
+👥 Total de pessoas: ${data.numAccompanists}
+👨‍👩‍👧‍👦 Acompanhantes: ${data.accompanists.join(', ') || 'Nenhum'}
+🍽️ Restrições alimentares: ${data.dietary || 'Nenhuma'}
+💌 Mensagem: ${data.message || 'Nenhuma'}
+
+📅 Data/Hora: ${new Date().toLocaleString('pt-PT')}
+
+---
+Acesse a planilha: https://docs.google.com/spreadsheets/d/${SpreadsheetApp.getActiveSpreadsheet().getId()}
+    `;
+
+    MailApp.sendEmail(email, subject, body);
+  } catch (error) {
+    Logger.log('Erro ao enviar email: ' + error);
+  }
+}

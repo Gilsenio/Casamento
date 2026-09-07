@@ -23,7 +23,6 @@
         overflow-x: hidden;
       }
 
-      /* Animação de pétalas caindo */
       .petal {
         position: fixed;
         top: -10px;
@@ -65,6 +64,33 @@
         }
       }
 
+      /* Controle de música */
+      .music-control {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #d4526e 0%, #b8405e 100%);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(212, 82, 110, 0.4);
+        transition: all 0.3s;
+      }
+
+      .music-control:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 25px rgba(212, 82, 110, 0.6);
+      }
+
+      .music-control span {
+        font-size: 28px;
+      }
+
       .header {
         text-align: center;
         margin-bottom: 40px;
@@ -96,10 +122,10 @@
       }
 
       .header .names {
-        font-size: 28px;
+        font-size: 24px;
         color: #8b5a5f;
         font-style: italic;
-        margin: 15px 0;
+        margin: 8px 0;
       }
 
       .header p {
@@ -115,7 +141,78 @@
         margin: 20px auto;
       }
 
-      /* Informações do evento */
+      /* Galeria de fotos */
+      .photo-gallery {
+        margin: 30px 0;
+        text-align: center;
+      }
+
+      .photo-gallery h3 {
+        color: #d4526e;
+        font-size: 22px;
+        margin-bottom: 20px;
+      }
+
+      .gallery-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .gallery-item {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .gallery-item:hover {
+        transform: scale(1.05);
+      }
+
+      .gallery-item img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* Modal de foto */
+      .photo-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .photo-modal.active {
+        display: flex;
+      }
+
+      .photo-modal img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 10px;
+      }
+
+      .photo-modal .close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 40px;
+        color: white;
+        cursor: pointer;
+      }
+
       .event-info {
         background: linear-gradient(135deg, #fff5f7 0%, #ffe8ec 100%);
         padding: 25px;
@@ -146,7 +243,6 @@
         text-align: center;
       }
 
-      /* Contador regressivo */
       .countdown {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -273,11 +369,6 @@
         font-size: 22px;
       }
 
-      .guest-info p {
-        color: #666;
-        font-family: 'Segoe UI', sans-serif;
-      }
-
       .accompanist-inputs {
         margin-top: 15px;
       }
@@ -358,34 +449,49 @@
         }
       }
 
-      /* Responsivo */
       @media (max-width: 600px) {
         .container {
           padding: 30px 20px;
         }
-
         .header h1 {
           font-size: 28px;
         }
-
         .header .names {
-          font-size: 22px;
+          font-size: 20px;
         }
-
         .countdown {
           gap: 10px;
         }
-
         .countdown-number {
           font-size: 24px;
+        }
+        .music-control {
+          width: 50px;
+          height: 50px;
+          bottom: 20px;
+          right: 20px;
         }
       }
     </style>
   </head>
   <body>
-    <!-- Pétalas caindo -->
+    <!-- Controle de Música -->
+    <div class="music-control" id="music-control" onclick="toggleMusic()">
+      <span id="music-icon">🎵</span>
+    </div>
+
+    <!-- Audio Player (oculto) -->
+    <audio id="background-music" loop>
+      <source id="music-source" src="" type="audio/mpeg" />
+    </audio>
+
+    <!-- Modal de Foto -->
+    <div class="photo-modal" id="photo-modal" onclick="closePhotoModal()">
+      <span class="close">&times;</span>
+      <img id="modal-image" src="" alt="Foto ampliada" />
+    </div>
+
     <script>
-      // Criar pétalas animadas
       for (let i = 0; i < 20; i++) {
         const petal = document.createElement('div');
         petal.className = 'petal';
@@ -407,7 +513,16 @@
         <p>Confirme sua presença no nosso grande dia!</p>
       </div>
 
-      <!-- Informações do Evento -->
+      <!-- Galeria de Fotos -->
+      <div
+        class="photo-gallery"
+        id="photo-gallery-section"
+        style="display: none"
+      >
+        <h3>📸 Nossa História</h3>
+        <div class="gallery-container" id="gallery-container"></div>
+      </div>
+
       <div class="event-info">
         <h3>📅 Detalhes do Evento</h3>
         <div class="event-detail">
@@ -425,7 +540,6 @@
           >
         </div>
 
-        <!-- Contador Regressivo -->
         <h3 style="margin-top: 25px; margin-bottom: 15px; text-align: center">
           ⏳ Contagem Regressiva
         </h3>
@@ -449,13 +563,11 @@
         </div>
       </div>
 
-      <!-- Loading inicial -->
       <div id="initial-loading" class="loading">
         <div class="spinner"></div>
         <p>A carregar...</p>
       </div>
 
-      <!-- Etapa 1: Validação -->
       <div id="validation-step" class="hidden">
         <div class="info-box">
           ℹ️ Insira o número de telemóvel que recebeu o convite
@@ -473,7 +585,6 @@
         <div id="validation-error" class="error hidden"></div>
       </div>
 
-      <!-- Etapa 2: Formulário de Confirmação -->
       <div id="rsvp-step" class="hidden">
         <div class="guest-info">
           <h3>
@@ -529,7 +640,6 @@
         <div id="form-error" class="error hidden"></div>
       </div>
 
-      <!-- Etapa 3: Sucesso -->
       <div id="success-step" class="hidden">
         <div class="success-animation">🎉</div>
         <div class="success">
@@ -546,18 +656,82 @@
     </div>
 
     <script>
-      // ============================================
-      // CONFIGURAÇÃO
-      // ============================================
       const SCRIPT_URL =
         'https://script.google.com/macros/s/AKfycbzJV5HcLp13pNrbPnMHa2hYxstKqcjdH58NRKlRaI7MWqn3fMUJtqsfD04gfwLORzAS/exec';
-
-      // DATA DO CASAMENTO - ALTERE AQUI
       const WEDDING_DATE = new Date('2026-12-19T12:00:00');
 
       let guestList = {};
       let currentPhone = '';
       let currentGuest = null;
+      let musicPlaying = false;
+      let multimediaData = { musicas: [], fotos: [] };
+
+      // ============================================
+      // MÚSICA DE FUNDO
+      // ============================================
+      function toggleMusic() {
+        const audio = document.getElementById('background-music');
+        const icon = document.getElementById('music-icon');
+
+        if (musicPlaying) {
+          audio.pause();
+          icon.textContent = '🎵';
+          musicPlaying = false;
+        } else {
+          audio.play().catch((e) => console.log('Erro ao tocar música:', e));
+          icon.textContent = '🔇';
+          musicPlaying = true;
+        }
+      }
+
+      function loadMusic() {
+        if (multimediaData.musicas.length > 0) {
+          const musicUrl = multimediaData.musicas[0].url;
+
+          // Converter URL do YouTube para embed se necessário
+          let audioUrl = musicUrl;
+          if (
+            musicUrl.includes('youtube.com') ||
+            musicUrl.includes('youtu.be')
+          ) {
+            // Para YouTube, não podemos usar diretamente. Avisar no console.
+            console.log(
+              'Para música do YouTube, considere usar um link direto de arquivo MP3',
+            );
+          }
+
+          document.getElementById('music-source').src = audioUrl;
+          document.getElementById('background-music').load();
+        }
+      }
+
+      // ============================================
+      // GALERIA DE FOTOS
+      // ============================================
+      function loadGallery() {
+        if (multimediaData.fotos.length > 0) {
+          document.getElementById('photo-gallery-section').style.display =
+            'block';
+          const container = document.getElementById('gallery-container');
+          container.innerHTML = '';
+
+          multimediaData.fotos.forEach((foto, index) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `<img src="${foto.url}" alt="${foto.descricao}" onclick="openPhotoModal('${foto.url}')">`;
+            container.appendChild(item);
+          });
+        }
+      }
+
+      function openPhotoModal(url) {
+        document.getElementById('modal-image').src = url;
+        document.getElementById('photo-modal').classList.add('active');
+      }
+
+      function closePhotoModal() {
+        document.getElementById('photo-modal').classList.remove('active');
+      }
 
       // ============================================
       // CONTADOR REGRESSIVO
@@ -585,12 +759,11 @@
         document.getElementById('seconds').textContent = seconds;
       }
 
-      // Atualizar contador a cada segundo
       setInterval(updateCountdown, 1000);
       updateCountdown();
 
       // ============================================
-      // CARREGAR LISTA DE CONVIDADOS
+      // CARREGAR DADOS
       // ============================================
       window.addEventListener('load', loadGuestList);
 
@@ -601,6 +774,12 @@
 
           if (data.success) {
             guestList = data.guests;
+            multimediaData = data.multimedia || { musicas: [], fotos: [] };
+
+            // Carregar multimedia
+            loadMusic();
+            loadGallery();
+
             document.getElementById('initial-loading').classList.add('hidden');
             document
               .getElementById('validation-step')
@@ -609,7 +788,7 @@
             throw new Error(data.error);
           }
         } catch (error) {
-          console.error('Erro ao carregar convidados:', error);
+          console.error('Erro ao carregar:', error);
           document.getElementById('initial-loading').innerHTML = `
             <div class="error">
               ❌ Erro ao carregar dados. Por favor, recarregue a página ou contacte os noivos.
@@ -650,7 +829,6 @@
         }
 
         currentGuest = guestList[phone];
-
         errorDiv.classList.add('hidden');
         document.getElementById('validation-step').classList.add('hidden');
         document.getElementById('rsvp-step').classList.remove('hidden');
@@ -671,7 +849,6 @@
       function toggleAccompanists() {
         const attendance = document.getElementById('attendance').value;
         const section = document.getElementById('accompanists-section');
-
         if (attendance === 'yes') {
           section.classList.remove('hidden');
         } else {
