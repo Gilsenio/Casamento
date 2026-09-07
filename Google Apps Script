@@ -1,5 +1,5 @@
 // ============================================
-// SCRIPT GOOGLE APPS SCRIPT - VERSÃO COM MULTIMEDIA
+// SCRIPT GOOGLE APPS SCRIPT - COM CÓDIGO DE VALIDAÇÃO
 // ============================================
 
 const SPREADSHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
@@ -28,7 +28,8 @@ function doGet(e) {
         guests[phone] = {
           name: guestData[i][1],
           maxGuests: parseInt(guestData[i][2]) || 1,
-          confirmed: guestData[i][3] === 'SIM',
+          code: guestData[i][3]?.toString().toUpperCase().trim() || '',
+          confirmed: guestData[i][4] === 'SIM',
         };
       }
     }
@@ -81,19 +82,16 @@ function getMultimediaData() {
         'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop',
         'Alianças de casamento',
       ]);
-
       multSheet.appendRow([
         'foto',
         'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&h=600&fit=crop',
         'Casal apaixonado',
       ]);
-
       multSheet.appendRow([
         'foto',
         'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&h=600&fit=crop',
         'Buquê de flores',
       ]);
-
       multSheet.appendRow([
         'foto',
         'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800&h=600&fit=crop',
@@ -119,7 +117,6 @@ function getMultimediaData() {
       // 1. Dropbox: Converter dl=0 para dl=1
       if (url.includes('dropbox.com') && url.includes('dl=0')) {
         url = url.replace('dl=0', 'dl=1');
-        Logger.log('Dropbox URL convertida: ' + url);
       }
 
       // 2. Google Drive: Converter para formato de download direto
@@ -127,7 +124,6 @@ function getMultimediaData() {
         const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
           url = `https://drive.google.com/uc?export=download&id=${match[1]}`;
-          Logger.log('Drive URL convertida: ' + url);
         }
       }
 
@@ -140,7 +136,6 @@ function getMultimediaData() {
         const photoMatch = url.match(/fotografias\/[^\/]+-([a-zA-Z0-9_-]+)/);
         if (photoMatch && photoMatch[1]) {
           url = `https://images.unsplash.com/photo-${photoMatch[1]}?w=800`;
-          Logger.log('Unsplash URL convertida: ' + url);
         }
       }
 
@@ -152,7 +147,6 @@ function getMultimediaData() {
       }
     }
 
-    Logger.log('Multimedia carregada: ' + JSON.stringify(multimedia));
     return multimedia;
   } catch (error) {
     Logger.log('Erro ao buscar multimedia: ' + error);
@@ -160,7 +154,7 @@ function getMultimediaData() {
   }
 }
 
-// Função para receber confirmações via POST
+// Processar confirmação via POST
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
@@ -172,7 +166,7 @@ function doPost(e) {
   }
 }
 
-// Processar confirmação via GET (solução CORS)
+// Processar confirmação via GET
 function handleSubmit(params) {
   try {
     const data = JSON.parse(decodeURIComponent(params.data));

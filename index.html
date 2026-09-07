@@ -54,7 +54,6 @@
         display: none;
       }
 
-      /* Mostrar container após entrar */
       .container.active {
         display: block;
         animation: fadeInUp 0.8s ease;
@@ -182,7 +181,7 @@
         }
       }
 
-      /* Controle de música - OCULTO INICIALMENTE */
+      /* Controle de música */
       .music-control {
         position: fixed;
         bottom: 30px;
@@ -421,6 +420,14 @@
         outline: none;
         border-color: #d4526e;
         box-shadow: 0 0 0 3px rgba(212, 82, 110, 0.1);
+      }
+
+      /* NOVO: Estilo para código de validação */
+      input[type='text']#validation-code {
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: bold;
+        text-align: center;
       }
 
       .btn {
@@ -715,10 +722,11 @@
 
       <div id="validation-step" class="hidden">
         <div class="info-box">
-          ℹ️ Insira o número de telemóvel que recebeu o convite
+          🔐 Para sua segurança, insira o número de telemóvel e o código de
+          validação que recebeu no convite
         </div>
         <div class="form-group">
-          <label for="phone">Número de Telemóvel *</label>
+          <label for="phone">📱 Número de Telemóvel *</label>
           <input
             type="tel"
             id="phone"
@@ -726,7 +734,19 @@
             required
           />
         </div>
-        <button class="btn" onclick="validateGuest()">Continuar</button>
+        <div class="form-group">
+          <label for="validation-code">🔑 Código de Validação *</label>
+          <input
+            type="text"
+            id="validation-code"
+            placeholder="Ex: ABC123"
+            maxlength="10"
+            required
+          />
+        </div>
+        <button class="btn" onclick="validateGuest()">
+          Validar e Continuar
+        </button>
         <div id="validation-error" class="error hidden"></div>
       </div>
 
@@ -815,16 +835,10 @@
       // ENTRADA NO SITE E MÚSICA
       // ============================================
       function enterSite() {
-        // Ocultar tela de boas-vindas
         document.getElementById('welcome-screen').classList.add('hidden');
-
-        // MOSTRAR CONTAINER PRINCIPAL
         document.querySelector('.container').classList.add('active');
-
-        // Mostrar controle de música
         document.getElementById('music-control').style.display = 'flex';
 
-        // INICIAR MÚSICA
         const audio = document.getElementById('background-music');
         audio
           .play()
@@ -922,9 +936,26 @@
       updateCountdown();
 
       // ============================================
-      // CARREGAR DADOS
+      // CARREGAR DADOS E PARÂMETROS DA URL
       // ============================================
-      window.addEventListener('load', loadGuestList);
+      window.addEventListener('load', function () {
+        loadGuestList();
+        checkURLParams(); // NOVO: Verificar parâmetros da URL
+      });
+
+      // NOVO: Verificar se há telefone e código na URL
+      function checkURLParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const phone = urlParams.get('tel');
+        const code = urlParams.get('code');
+
+        if (phone && code) {
+          // Preencher automaticamente os campos
+          document.getElementById('phone').value = phone;
+          document.getElementById('validation-code').value = code.toUpperCase();
+          console.log('✅ Dados preenchidos automaticamente da URL');
+        }
+      }
 
       async function loadGuestList() {
         try {
@@ -935,7 +966,6 @@
             guestList = data.guests;
             multimediaData = data.multimedia || { musicas: [], fotos: [] };
 
-            // Carregar multimedia
             loadMusic();
             loadGallery();
 
@@ -960,8 +990,13 @@
         return phone.replace(/[\s\-+]/g, '').replace(/^351/, '');
       }
 
+      // MODIFICADO: Validação com código
       function validateGuest() {
         const phoneInput = document.getElementById('phone').value;
+        const codeInput = document
+          .getElementById('validation-code')
+          .value.toUpperCase()
+          .trim();
         const phone = normalizePhone(phoneInput);
         const errorDiv = document.getElementById('validation-error');
 
@@ -973,16 +1008,30 @@
           return;
         }
 
+        if (!codeInput) {
+          errorDiv.textContent = 'Por favor, insira o código de validação.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
         if (!guestList[phone]) {
           errorDiv.textContent =
-            'Desculpe, este número não está na nossa lista de convidados. Verifique o número ou contacte os noivos.';
+            '❌ Número de telemóvel não encontrado na lista de convidados. Verifique o número ou contacte os noivos.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        // NOVO: Verificar código de validação
+        if (guestList[phone].code !== codeInput) {
+          errorDiv.textContent =
+            '🔐 Código de validação incorreto. Verifique o código no seu convite.';
           errorDiv.classList.remove('hidden');
           return;
         }
 
         if (guestList[phone].confirmed) {
           errorDiv.textContent =
-            'Você já confirmou sua presença! Se precisar alterar, contacte os noivos.';
+            '✅ Você já confirmou sua presença! Se precisar alterar, contacte os noivos.';
           errorDiv.classList.remove('hidden');
           return;
         }
