@@ -63,18 +63,41 @@ function getMultimediaData() {
       multSheet.appendRow(['Tipo', 'URL', 'Descrição']);
       multSheet.appendRow([
         'musica',
-        'https://drive.google.com/file/d/1Ih1Y1p5RR4a2I61pcJN7H8cj8mqntKE4/view?usp=sharing',
-        'Música de fundo',
+        'https://www.dropbox.com/scl/fi/fyg9h4pmq2l93j0b6jqw0/Ed-Sheeran-Thinking-Out-Loud-Official-Music-Video.mp3?rlkey=m0fktn9hx6hnp7bjf9lo0q5g3&st=fdg22ekc&dl=1',
+        'Nossa música',
       ]);
       multSheet.appendRow([
         'foto',
-        'https://unsplash.com/pt-br/fotografias/alianca-de-casamento-dourada-no-textil-branco-8vaQKYnawHw',
+        'https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'Foto padrão 1',
       ]);
       multSheet.appendRow([
         'foto',
-        'https://unsplash.com/pt-br/fotografias/fotografia-em-tons-de-cinza-do-homem-e-da-mulher-desenham-o-coracao-na-areia-UA3zSV9ze8U',
+        'https://images.unsplash.com/photo-1542415719-96b33a38d73d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'Foto padrão 2',
+      ]);
+      multSheet.appendRow([
+        'foto',
+        'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop',
+        'Alianças de casamento',
+      ]);
+
+      multSheet.appendRow([
+        'foto',
+        'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&h=600&fit=crop',
+        'Casal apaixonado',
+      ]);
+
+      multSheet.appendRow([
+        'foto',
+        'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&h=600&fit=crop',
+        'Buquê de flores',
+      ]);
+
+      multSheet.appendRow([
+        'foto',
+        'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800&h=600&fit=crop',
+        'Decoração do casamento',
       ]);
     }
 
@@ -85,10 +108,43 @@ function getMultimediaData() {
     };
 
     for (let i = 1; i < data.length; i++) {
-      const tipo = data[i][0].toString().toLowerCase();
-      const url = data[i][1].toString();
-      const descricao = data[i][2].toString();
+      const tipo = data[i][0].toString().toLowerCase().trim();
+      let url = data[i][1].toString().trim();
+      const descricao = data[i][2].toString().trim();
 
+      if (!url) continue;
+
+      // ===== PROCESSAR URLs =====
+
+      // 1. Dropbox: Converter dl=0 para dl=1
+      if (url.includes('dropbox.com') && url.includes('dl=0')) {
+        url = url.replace('dl=0', 'dl=1');
+        Logger.log('Dropbox URL convertida: ' + url);
+      }
+
+      // 2. Google Drive: Converter para formato de download direto
+      if (url.includes('drive.google.com/file/d/')) {
+        const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+          url = `https://drive.google.com/uc?export=download&id=${match[1]}`;
+          Logger.log('Drive URL convertida: ' + url);
+        }
+      }
+
+      // 3. Unsplash: Converter para URL de imagem direta
+      if (
+        url.includes('unsplash.com/') &&
+        !url.includes('images.unsplash.com')
+      ) {
+        // Extrair ID da foto
+        const photoMatch = url.match(/fotografias\/[^\/]+-([a-zA-Z0-9_-]+)/);
+        if (photoMatch && photoMatch[1]) {
+          url = `https://images.unsplash.com/photo-${photoMatch[1]}?w=800`;
+          Logger.log('Unsplash URL convertida: ' + url);
+        }
+      }
+
+      // Adicionar à lista apropriada
       if (tipo === 'musica' && url) {
         multimedia.musicas.push({ url: url, descricao: descricao });
       } else if (tipo === 'foto' && url) {
@@ -96,6 +152,7 @@ function getMultimediaData() {
       }
     }
 
+    Logger.log('Multimedia carregada: ' + JSON.stringify(multimedia));
     return multimedia;
   } catch (error) {
     Logger.log('Erro ao buscar multimedia: ' + error);
