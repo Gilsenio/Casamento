@@ -1,424 +1,461 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmação de Presença - Casamento</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirmação de Presença - Casamento</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
 
-    .container {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      max-width: 500px;
-      width: 100%;
-      padding: 40px;
-      animation: fadeIn 0.5s ease;
-    }
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 100%;
+        padding: 40px;
+        animation: fadeIn 0.5s ease;
+      }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
 
-    .header h1 {
-      color: #667eea;
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
+      .header h1 {
+        color: #667eea;
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
 
-    .header p {
-      color: #666;
-      font-size: 16px;
-    }
+      .header p {
+        color: #666;
+        font-size: 16px;
+      }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
+      .form-group {
+        margin-bottom: 20px;
+      }
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: #333;
-      font-weight: 600;
-    }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+      }
 
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: border-color 0.3s;
-    }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
 
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #667eea;
-    }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
 
-    .btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 18px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+      .btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
 
-    .btn:hover {
-      transform: translateY(-2px);
-    }
+      .btn:hover {
+        transform: translateY(-2px);
+      }
 
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
-    .error {
-      background: #fee;
-      color: #c33;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border-left: 4px solid #c33;
-    }
+      .error {
+        background: #fee;
+        color: #c33;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #c33;
+      }
 
-    .success {
-      background: #efe;
-      color: #3c3;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border-left: 4px solid #3c3;
-    }
+      .success {
+        background: #efe;
+        color: #3c3;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #3c3;
+      }
 
-    .hidden {
-      display: none;
-    }
+      .hidden {
+        display: none;
+      }
 
-    .guest-info {
-      background: #f5f5f5;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
+      .guest-info {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
 
-    .guest-info h3 {
-      color: #667eea;
-      margin-bottom: 10px;
-    }
+      .guest-info h3 {
+        color: #667eea;
+        margin-bottom: 10px;
+      }
 
-    .accompanist-inputs {
-      margin-top: 15px;
-    }
+      .accompanist-inputs {
+        margin-top: 15px;
+      }
 
-    .accompanist-input {
-      margin-bottom: 10px;
-    }
+      .accompanist-input {
+        margin-bottom: 10px;
+      }
 
-    .loading {
-      text-align: center;
-      padding: 20px;
-    }
+      .loading {
+        text-align: center;
+        padding: 20px;
+      }
 
-    .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #667eea;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 15px;
-    }
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
-    .info-box {
-      background: #e3f2fd;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border-left: 4px solid #2196f3;
-      font-size: 14px;
-      color: #1565c0;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>💍 Nosso Casamento</h1>
-      <p>Confirme sua presença</p>
-    </div>
-
-    <!-- Loading inicial -->
-    <div id="initial-loading" class="loading">
-      <div class="spinner"></div>
-      <p>A carregar...</p>
-    </div>
-
-    <!-- Etapa 1: Validação -->
-    <div id="validation-step" class="hidden">
-      <div class="info-box">
-        ℹ️ Insira o número de telemóvel que recebeu o convite
-      </div>
-      <div class="form-group">
-        <label for="phone">Número de Telemóvel *</label>
-        <input type="tel" id="phone" placeholder="+351 912 345 678" required>
-      </div>
-      <button class="btn" onclick="validateGuest()">Continuar</button>
-      <div id="validation-error" class="error hidden"></div>
-    </div>
-
-    <!-- Etapa 2: Formulário de Confirmação -->
-    <div id="rsvp-step" class="hidden">
-      <div class="guest-info">
-        <h3>Olá, <span id="guest-name"></span>!</h3>
-        <p>Ficamos felizes em tê-lo(a) conosco!</p>
+      .info-box {
+        background: #e3f2fd;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #2196f3;
+        font-size: 14px;
+        color: #1565c0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>💍 Nosso Casamento</h1>
+        <p>Confirme sua presença</p>
       </div>
 
-      <form id="rsvp-form">
+      <!-- Loading inicial -->
+      <div id="initial-loading" class="loading">
+        <div class="spinner"></div>
+        <p>A carregar...</p>
+      </div>
+
+      <!-- Etapa 1: Validação -->
+      <div id="validation-step" class="hidden">
+        <div class="info-box">
+          ℹ️ Insira o número de telemóvel que recebeu o convite
+        </div>
         <div class="form-group">
-          <label for="attendance">Vai comparecer? *</label>
-          <select id="attendance" required onchange="toggleAccompanists()">
-            <option value="">Selecione...</option>
-            <option value="yes">Sim, estarei presente! 🎉</option>
-            <option value="no">Infelizmente não poderei ir 😢</option>
-          </select>
+          <label for="phone">Número de Telemóvel *</label>
+          <input
+            type="tel"
+            id="phone"
+            placeholder="+351 912 345 678"
+            required
+          />
+        </div>
+        <button class="btn" onclick="validateGuest()">Continuar</button>
+        <div id="validation-error" class="error hidden"></div>
+      </div>
+
+      <!-- Etapa 2: Formulário de Confirmação -->
+      <div id="rsvp-step" class="hidden">
+        <div class="guest-info">
+          <h3>Olá, <span id="guest-name"></span>!</h3>
+          <p>Ficamos felizes em tê-lo(a) conosco!</p>
         </div>
 
-        <div id="accompanists-section" class="hidden">
+        <form id="rsvp-form">
           <div class="form-group">
-            <label for="num-accompanists">Quantos acompanhantes? *</label>
-            <select id="num-accompanists" onchange="showAccompanistInputs()">
-              <option value="0">Apenas eu</option>
+            <label for="attendance">Vai comparecer? *</label>
+            <select id="attendance" required onchange="toggleAccompanists()">
+              <option value="">Selecione...</option>
+              <option value="yes">Sim, estarei presente! 🎉</option>
+              <option value="no">Infelizmente não poderei ir 😢</option>
             </select>
           </div>
 
-          <div id="accompanist-names" class="accompanist-inputs"></div>
+          <div id="accompanists-section" class="hidden">
+            <div class="form-group">
+              <label for="num-accompanists">Quantos acompanhantes? *</label>
+              <select id="num-accompanists" onchange="showAccompanistInputs()">
+                <option value="0">Apenas eu</option>
+              </select>
+            </div>
+
+            <div id="accompanist-names" class="accompanist-inputs"></div>
+
+            <div class="form-group">
+              <label for="dietary">Restrições alimentares?</label>
+              <textarea
+                id="dietary"
+                rows="3"
+                placeholder="Ex: vegetariano, alergia a frutos do mar, etc."
+              ></textarea>
+            </div>
+          </div>
 
           <div class="form-group">
-            <label for="dietary">Restrições alimentares?</label>
-            <textarea id="dietary" rows="3" placeholder="Ex: vegetariano, alergia a frutos do mar, etc."></textarea>
+            <label for="message">Mensagem para os noivos (opcional)</label>
+            <textarea
+              id="message"
+              rows="3"
+              placeholder="Deixe uma mensagem carinhosa..."
+            ></textarea>
           </div>
+
+          <button type="submit" class="btn" id="submit-btn">
+            Confirmar Presença
+          </button>
+        </form>
+
+        <div id="form-error" class="error hidden"></div>
+      </div>
+
+      <!-- Etapa 3: Sucesso -->
+      <div id="success-step" class="hidden">
+        <div class="success">
+          <h2 style="margin-bottom: 10px">✅ Confirmação Enviada!</h2>
+          <p>Obrigado por confirmar. Aguardamos ansiosamente por você!</p>
         </div>
-
-        <div class="form-group">
-          <label for="message">Mensagem para os noivos (opcional)</label>
-          <textarea id="message" rows="3" placeholder="Deixe uma mensagem carinhosa..."></textarea>
-        </div>
-
-        <button type="submit" class="btn" id="submit-btn">Confirmar Presença</button>
-      </form>
-
-      <div id="form-error" class="error hidden"></div>
-    </div>
-
-    <!-- Etapa 3: Sucesso -->
-    <div id="success-step" class="hidden">
-      <div class="success">
-        <h2 style="margin-bottom: 10px;">✅ Confirmação Enviada!</h2>
-        <p>Obrigado por confirmar. Aguardamos ansiosamente por você!</p>
       </div>
     </div>
-  </div>
 
-  <script>
-    // ============================================
-    // CONFIGURAÇÃO - COLE A URL DO GOOGLE APPS SCRIPT AQUI
-    // ============================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJV5HcLp13pNrbPnMHa2hYxstKqcjdH58NRKlRaI7MWqn3fMUJtqsfD04gfwLORzAS/exec';
+    <script>
+      // ============================================
+      // CONFIGURAÇÃO - COLE A URL DO GOOGLE APPS SCRIPT AQUI
+      // ============================================
+      const SCRIPT_URL =
+        'https://script.google.com/macros/s/AKfycbzJV5HcLp13pNrbPnMHa2hYxstKqcjdH58NRKlRaI7MWqn3fMUJtqsfD04gfwLORzAS/exec';
 
-    let guestList = {};
-    let currentPhone = '';
-    let currentGuest = null;
+      let guestList = {};
+      let currentPhone = '';
+      let currentGuest = null;
 
-    // Carregar lista de convidados ao iniciar
-    window.addEventListener('load', loadGuestList);
+      // Carregar lista de convidados ao iniciar
+      window.addEventListener('load', loadGuestList);
 
-    async function loadGuestList() {
-      try {
-        const response = await fetch(SCRIPT_URL);
-        const data = await response.json();
+      async function loadGuestList() {
+        try {
+          const response = await fetch(SCRIPT_URL);
+          const data = await response.json();
 
-        if (data.success) {
-          guestList = data.guests;
-          document.getElementById('initial-loading').classList.add('hidden');
-          document.getElementById('validation-step').classList.remove('hidden');
-        } else {
-          throw new Error(data.error);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar convidados:', error);
-        document.getElementById('initial-loading').innerHTML = `
+          if (data.success) {
+            guestList = data.guests;
+            document.getElementById('initial-loading').classList.add('hidden');
+            document
+              .getElementById('validation-step')
+              .classList.remove('hidden');
+          } else {
+            throw new Error(data.error);
+          }
+        } catch (error) {
+          console.error('Erro ao carregar convidados:', error);
+          document.getElementById('initial-loading').innerHTML = `
           <div class="error">
             ❌ Erro ao carregar dados. Por favor, recarregue a página ou contacte os noivos.
           </div>
         `;
-      }
-    }
-
-    function normalizePhone(phone) {
-      return phone.replace(/[\s\-+]/g, '').replace(/^351/, '');
-    }
-
-    function validateGuest() {
-      const phoneInput = document.getElementById('phone').value;
-      const phone = normalizePhone(phoneInput);
-      const errorDiv = document.getElementById('validation-error');
-
-      currentPhone = phone;
-
-      if (!phone) {
-        errorDiv.textContent = 'Por favor, insira seu número de telemóvel.';
-        errorDiv.classList.remove('hidden');
-        return;
+        }
       }
 
-      if (!guestList[phone]) {
-        errorDiv.textContent = 'Desculpe, este número não está na nossa lista de convidados. Verifique o número ou contacte os noivos.';
-        errorDiv.classList.remove('hidden');
-        return;
+      function normalizePhone(phone) {
+        return phone.replace(/[\s\-+]/g, '').replace(/^351/, '');
       }
 
-      if (guestList[phone].confirmed) {
-        errorDiv.textContent = 'Você já confirmou sua presença! Se precisar alterar, contacte os noivos.';
-        errorDiv.classList.remove('hidden');
-        return;
+      function validateGuest() {
+        const phoneInput = document.getElementById('phone').value;
+        const phone = normalizePhone(phoneInput);
+        const errorDiv = document.getElementById('validation-error');
+
+        currentPhone = phone;
+
+        if (!phone) {
+          errorDiv.textContent = 'Por favor, insira seu número de telemóvel.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        if (!guestList[phone]) {
+          errorDiv.textContent =
+            'Desculpe, este número não está na nossa lista de convidados. Verifique o número ou contacte os noivos.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        if (guestList[phone].confirmed) {
+          errorDiv.textContent =
+            'Você já confirmou sua presença! Se precisar alterar, contacte os noivos.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        currentGuest = guestList[phone];
+
+        // Validação bem-sucedida
+        errorDiv.classList.add('hidden');
+        document.getElementById('validation-step').classList.add('hidden');
+        document.getElementById('rsvp-step').classList.remove('hidden');
+        document.getElementById('guest-name').textContent = currentGuest.name;
+
+        // Ajustar número máximo de acompanhantes
+        const maxGuests = currentGuest.maxGuests;
+        const select = document.getElementById('num-accompanists');
+        select.innerHTML = '';
+        for (let i = 0; i <= Math.min(maxGuests - 1, 10); i++) {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent =
+            i === 0 ? 'Apenas eu' : `${i} acompanhante${i > 1 ? 's' : ''}`;
+          select.appendChild(option);
+        }
       }
 
-      currentGuest = guestList[phone];
+      function toggleAccompanists() {
+        const attendance = document.getElementById('attendance').value;
+        const section = document.getElementById('accompanists-section');
 
-      // Validação bem-sucedida
-      errorDiv.classList.add('hidden');
-      document.getElementById('validation-step').classList.add('hidden');
-      document.getElementById('rsvp-step').classList.remove('hidden');
-      document.getElementById('guest-name').textContent = currentGuest.name;
-
-      // Ajustar número máximo de acompanhantes
-      const maxGuests = currentGuest.maxGuests;
-      const select = document.getElementById('num-accompanists');
-      select.innerHTML = '';
-      for (let i = 0; i <= Math.min(maxGuests - 1, 10); i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i === 0 ? 'Apenas eu' : `${i} acompanhante${i > 1 ? 's' : ''}`;
-        select.appendChild(option);
+        if (attendance === 'yes') {
+          section.classList.remove('hidden');
+        } else {
+          section.classList.add('hidden');
+        }
       }
-    }
 
-    function toggleAccompanists() {
-      const attendance = document.getElementById('attendance').value;
-      const section = document.getElementById('accompanists-section');
+      function showAccompanistInputs() {
+        const num = parseInt(document.getElementById('num-accompanists').value);
+        const container = document.getElementById('accompanist-names');
+        container.innerHTML = '';
 
-      if (attendance === 'yes') {
-        section.classList.remove('hidden');
-      } else {
-        section.classList.add('hidden');
-      }
-    }
-
-    function showAccompanistInputs() {
-      const num = parseInt(document.getElementById('num-accompanists').value);
-      const container = document.getElementById('accompanist-names');
-      container.innerHTML = '';
-
-      if (num > 0) {
-        for (let i = 1; i <= num; i++) {
-          const div = document.createElement('div');
-          div.className = 'accompanist-input';
-          div.innerHTML = `
+        if (num > 0) {
+          for (let i = 1; i <= num; i++) {
+            const div = document.createElement('div');
+            div.className = 'accompanist-input';
+            div.innerHTML = `
             <label for="accompanist-${i}">Nome do Acompanhante ${i} *</label>
             <input type="text" id="accompanist-${i}" required placeholder="Nome completo">
           `;
-          container.appendChild(div);
+            container.appendChild(div);
+          }
         }
       }
-    }
 
-    document.getElementById('rsvp-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
+      document
+        .getElementById('rsvp-form')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
 
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'A enviar...';
+          const submitBtn = document.getElementById('submit-btn');
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'A enviar...';
 
-      const attendance = document.getElementById('attendance').value;
-      const numAccompanists = parseInt(document.getElementById('num-accompanists').value);
-      const dietary = document.getElementById('dietary').value;
-      const message = document.getElementById('message').value;
+          const attendance = document.getElementById('attendance').value;
+          const numAccompanists = parseInt(
+            document.getElementById('num-accompanists').value,
+          );
+          const dietary = document.getElementById('dietary').value;
+          const message = document.getElementById('message').value;
 
-      const accompanists = [];
-      for (let i = 1; i <= numAccompanists; i++) {
-        const name = document.getElementById(`accompanist-${i}`)?.value;
-        if (name) accompanists.push(name);
-      }
+          const accompanists = [];
+          for (let i = 1; i <= numAccompanists; i++) {
+            const name = document.getElementById(`accompanist-${i}`)?.value;
+            if (name) accompanists.push(name);
+          }
 
-      const formData = {
-        phone: currentPhone,
-        name: currentGuest.name,
-        attendance: attendance,
-        numAccompanists: attendance === 'yes' ? numAccompanists + 1 : 0,
-        accompanists: accompanists,
-        dietary: dietary,
-        message: message,
-        timestamp: new Date().toISOString()
-      };
+          const formData = {
+            phone: currentPhone,
+            name: currentGuest.name,
+            attendance: attendance,
+            numAccompanists: attendance === 'yes' ? numAccompanists + 1 : 0,
+            accompanists: accompanists,
+            dietary: dietary,
+            message: message,
+            timestamp: new Date().toISOString(),
+          };
 
-      try {
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData)
+          try {
+            // Usar GET com parâmetros para evitar CORS
+            const url = `${SCRIPT_URL}?action=submit&data=${encodeURIComponent(JSON.stringify(formData))}`;
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (result.success) {
+              document.getElementById('rsvp-step').classList.add('hidden');
+              document
+                .getElementById('success-step')
+                .classList.remove('hidden');
+            } else {
+              throw new Error(result.error);
+            }
+          } catch (error) {
+            console.error('Erro ao enviar:', error);
+            const errorDiv = document.getElementById('form-error');
+            errorDiv.textContent =
+              'Erro ao enviar confirmação. Por favor, tente novamente.';
+            errorDiv.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Confirmar Presença';
+          }
         });
-
-        const result = await response.json();
-
-        if (result.success) {
-          document.getElementById('rsvp-step').classList.add('hidden');
-          document.getElementById('success-step').classList.remove('hidden');
-        } else {
-          throw new Error(result.error);
-        }
-      } catch (error) {
-        console.error('Erro ao enviar:', error);
-        const errorDiv = document.getElementById('form-error');
-        errorDiv.textContent = 'Erro ao enviar confirmação. Por favor, tente novamente.';
-        errorDiv.classList.remove('hidden');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Confirmar Presença';
-      }
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
