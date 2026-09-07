@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirmação de Presença - Casamento</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 100%;
+        padding: 40px;
+        animation: fadeIn 0.5s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        color: #667eea;
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        color: #666;
+        font-size: 16px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .error {
+        background: #fee;
+        color: #c33;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #c33;
+      }
+
+      .success {
+        background: #efe;
+        color: #3c3;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #3c3;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .guest-info {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .guest-info h3 {
+        color: #667eea;
+        margin-bottom: 10px;
+      }
+
+      .accompanist-inputs {
+        margin-top: 15px;
+      }
+
+      .accompanist-input {
+        margin-bottom: 10px;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>💍 Nosso Casamento</h1>
+        <p>Confirme sua presença</p>
+      </div>
+
+      <!-- Etapa 1: Validação -->
+      <div id="validation-step">
+        <div class="form-group">
+          <label for="phone">Número de Telemóvel *</label>
+          <input
+            type="tel"
+            id="phone"
+            placeholder="+351 912 345 678"
+            required
+          />
+        </div>
+        <button class="btn" onclick="validateGuest()">Continuar</button>
+        <div id="validation-error" class="error hidden"></div>
+      </div>
+
+      <!-- Etapa 2: Formulário de Confirmação -->
+      <div id="rsvp-step" class="hidden">
+        <div class="guest-info">
+          <h3>Olá, <span id="guest-name"></span>!</h3>
+          <p>Ficamos felizes em tê-lo(a) conosco!</p>
+        </div>
+
+        <form id="rsvp-form">
+          <div class="form-group">
+            <label for="attendance">Vai comparecer? *</label>
+            <select id="attendance" required onchange="toggleAccompanists()">
+              <option value="">Selecione...</option>
+              <option value="yes">Sim, estarei presente! 🎉</option>
+              <option value="no">Infelizmente não poderei ir 😢</option>
+            </select>
+          </div>
+
+          <div id="accompanists-section" class="hidden">
+            <div class="form-group">
+              <label for="num-accompanists">Quantos acompanhantes? *</label>
+              <select id="num-accompanists" onchange="showAccompanistInputs()">
+                <option value="0">Apenas eu</option>
+                <option value="1">1 acompanhante</option>
+                <option value="2">2 acompanhantes</option>
+                <option value="3">3 acompanhantes</option>
+                <option value="4">4 acompanhantes</option>
+                <option value="5">5 ou mais</option>
+              </select>
+            </div>
+
+            <div id="accompanist-names" class="accompanist-inputs"></div>
+
+            <div class="form-group">
+              <label for="dietary">Restrições alimentares?</label>
+              <textarea
+                id="dietary"
+                rows="3"
+                placeholder="Ex: vegetariano, alergia a frutos do mar, etc."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Mensagem para os noivos (opcional)</label>
+            <textarea
+              id="message"
+              rows="3"
+              placeholder="Deixe uma mensagem carinhosa..."
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn">Confirmar Presença</button>
+        </form>
+
+        <div id="form-error" class="error hidden"></div>
+      </div>
+
+      <!-- Etapa 3: Sucesso -->
+      <div id="success-step" class="hidden">
+        <div class="success">
+          <h2 style="margin-bottom: 10px">✅ Confirmação Enviada!</h2>
+          <p>Obrigado por confirmar. Aguardamos ansiosamente por você!</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // LISTA DE CONVIDADOS - A sua amiga deve editar esta lista
+      const guestList = {
+        912345678: { name: 'João Silva', maxGuests: 4, confirmed: false },
+        913456789: { name: 'Maria Santos', maxGuests: 2, confirmed: false },
+        914567890: { name: 'Pedro Costa', maxGuests: 6, confirmed: false },
+        915678901: { name: 'Ana Oliveira', maxGuests: 3, confirmed: false },
+        // Adicione mais convidados aqui
+      };
+
+      let currentPhone = '';
+
+      function normalizePhone(phone) {
+        // Remove espaços, traços e +351
+        return phone.replace(/[\s\-+]/g, '').replace(/^351/, '');
+      }
+
+      function validateGuest() {
+        const phoneInput = document.getElementById('phone').value;
+        const phone = normalizePhone(phoneInput);
+        const errorDiv = document.getElementById('validation-error');
+
+        currentPhone = phone;
+
+        if (!phone) {
+          errorDiv.textContent = 'Por favor, insira seu número de telemóvel.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        if (!guestList[phone]) {
+          errorDiv.textContent =
+            'Desculpe, este número não está na nossa lista de convidados. Verifique o número ou contacte os noivos.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        if (guestList[phone].confirmed) {
+          errorDiv.textContent =
+            'Você já confirmou sua presença! Se precisar alterar, contacte os noivos.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        // Validação bem-sucedida
+        errorDiv.classList.add('hidden');
+        document.getElementById('validation-step').classList.add('hidden');
+        document.getElementById('rsvp-step').classList.remove('hidden');
+        document.getElementById('guest-name').textContent =
+          guestList[phone].name;
+
+        // Ajustar número máximo de acompanhantes
+        const maxGuests = guestList[phone].maxGuests;
+        const select = document.getElementById('num-accompanists');
+        select.innerHTML = '';
+        for (let i = 0; i <= Math.min(maxGuests - 1, 5); i++) {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent =
+            i === 0 ? 'Apenas eu' : `${i} acompanhante${i > 1 ? 's' : ''}`;
+          select.appendChild(option);
+        }
+      }
+
+      function toggleAccompanists() {
+        const attendance = document.getElementById('attendance').value;
+        const section = document.getElementById('accompanists-section');
+
+        if (attendance === 'yes') {
+          section.classList.remove('hidden');
+        } else {
+          section.classList.add('hidden');
+        }
+      }
+
+      function showAccompanistInputs() {
+        const num = parseInt(document.getElementById('num-accompanists').value);
+        const container = document.getElementById('accompanist-names');
+        container.innerHTML = '';
+
+        for (let i = 1; i <= num; i++) {
+          const div = document.createElement('div');
+          div.className = 'accompanist-input';
+          div.innerHTML = `
+          <label for="accompanist-${i}">Nome do Acompanhante ${i} *</label>
+          <input type="text" id="accompanist-${i}" required placeholder="Nome completo">
+        `;
+          container.appendChild(div);
+        }
+      }
+
+      document
+        .getElementById('rsvp-form')
+        .addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          const attendance = document.getElementById('attendance').value;
+          const numAccompanists =
+            document.getElementById('num-accompanists').value;
+          const dietary = document.getElementById('dietary').value;
+          const message = document.getElementById('message').value;
+
+          const accompanists = [];
+          for (let i = 1; i <= parseInt(numAccompanists); i++) {
+            const name = document.getElementById(`accompanist-${i}`)?.value;
+            if (name) accompanists.push(name);
+          }
+
+          // Dados para enviar
+          const formData = {
+            phone: currentPhone,
+            name: guestList[currentPhone].name,
+            attendance: attendance,
+            numAccompanists:
+              attendance === 'yes' ? parseInt(numAccompanists) + 1 : 0,
+            accompanists: accompanists,
+            dietary: dietary,
+            message: message,
+            timestamp: new Date().toISOString(),
+          };
+
+          // Aqui você pode enviar para Google Sheets, email, etc.
+          console.log('Dados do formulário:', formData);
+
+          // Simular envio
+          submitToGoogleSheets(formData);
+
+          // Marcar como confirmado
+          guestList[currentPhone].confirmed = true;
+
+          // Mostrar sucesso
+          document.getElementById('rsvp-step').classList.add('hidden');
+          document.getElementById('success-step').classList.remove('hidden');
+        });
+
+      // IMPORTANTE: Configurar integração com Google Sheets
+      function submitToGoogleSheets(data) {
+        // URL do Google Apps Script Web App
+        const SCRIPT_URL = 'SUA_URL_DO_GOOGLE_APPS_SCRIPT_AQUI';
+
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        })
+          .then(() => {
+            console.log('Dados enviados com sucesso!');
+          })
+          .catch((error) => {
+            console.error('Erro ao enviar:', error);
+          });
+      }
+    </script>
+  </body>
+</html>
