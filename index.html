@@ -51,6 +51,13 @@
         animation: fadeInUp 0.8s ease;
         position: relative;
         z-index: 10;
+        display: none;
+      }
+
+      /* Mostrar container após entrar */
+      .container.active {
+        display: block;
+        animation: fadeInUp 0.8s ease;
       }
 
       @keyframes fadeInUp {
@@ -64,7 +71,118 @@
         }
       }
 
-      /* Controle de música */
+      /* Tela de Boas-Vindas */
+      .welcome-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(212, 82, 110, 0.95) 0%,
+          rgba(184, 64, 94, 0.95) 100%
+        );
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .welcome-screen.hidden {
+        display: none;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .welcome-content {
+        text-align: center;
+        color: white;
+        padding: 40px;
+      }
+
+      .welcome-content h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        letter-spacing: 3px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .welcome-content .names {
+        font-size: 32px;
+        font-style: italic;
+        margin: 15px 0;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .welcome-content p {
+        font-size: 18px;
+        margin: 20px 0 40px;
+        opacity: 0.9;
+      }
+
+      .welcome-rings {
+        font-size: 100px;
+        margin-bottom: 30px;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .enter-button {
+        background: white;
+        color: #d4526e;
+        border: none;
+        padding: 20px 60px;
+        font-size: 24px;
+        font-weight: bold;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      .enter-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .music-note {
+        font-size: 20px;
+        margin-left: 10px;
+        display: inline-block;
+        animation: musicNote 1s ease-in-out infinite;
+      }
+
+      @keyframes musicNote {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      /* Controle de música - OCULTO INICIALMENTE */
       .music-control {
         position: fixed;
         bottom: 30px;
@@ -74,7 +192,7 @@
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
         cursor: pointer;
@@ -471,10 +589,37 @@
           bottom: 20px;
           right: 20px;
         }
+        .welcome-content h1 {
+          font-size: 36px;
+        }
+        .welcome-content .names {
+          font-size: 24px;
+        }
+        .enter-button {
+          padding: 15px 40px;
+          font-size: 20px;
+        }
       }
     </style>
   </head>
   <body>
+    <!-- Tela de Boas-Vindas -->
+    <div class="welcome-screen" id="welcome-screen">
+      <div class="welcome-content">
+        <div class="welcome-rings">💍</div>
+        <h1>Bem-vindo(a)!</h1>
+        <div class="names">Anilda & António</div>
+        <p>Você está convidado(a) para o nosso casamento</p>
+        <button class="enter-button" onclick="enterSite()">
+          Entrar
+          <span class="music-note">🎵</span>
+        </button>
+        <p style="font-size: 14px; margin-top: 20px; opacity: 0.8">
+          *A música será iniciada ao clicar
+        </p>
+      </div>
+    </div>
+
     <!-- Controle de Música -->
     <div class="music-control" id="music-control" onclick="toggleMusic()">
       <span id="music-icon">🎵</span>
@@ -667,8 +812,30 @@
       let multimediaData = { musicas: [], fotos: [] };
 
       // ============================================
-      // MÚSICA DE FUNDO
+      // ENTRADA NO SITE E MÚSICA
       // ============================================
+      function enterSite() {
+        // Ocultar tela de boas-vindas
+        document.getElementById('welcome-screen').classList.add('hidden');
+
+        // MOSTRAR CONTAINER PRINCIPAL
+        document.querySelector('.container').classList.add('active');
+
+        // Mostrar controle de música
+        document.getElementById('music-control').style.display = 'flex';
+
+        // INICIAR MÚSICA
+        const audio = document.getElementById('background-music');
+        audio
+          .play()
+          .then(() => {
+            console.log('✅ Música iniciada!');
+            document.getElementById('music-icon').textContent = '🔇';
+            musicPlaying = true;
+          })
+          .catch((e) => console.log('Erro:', e));
+      }
+
       function toggleMusic() {
         const audio = document.getElementById('background-music');
         const icon = document.getElementById('music-icon');
@@ -678,30 +845,22 @@
           icon.textContent = '🎵';
           musicPlaying = false;
         } else {
-          audio.play().catch((e) => console.log('Erro ao tocar música:', e));
-          icon.textContent = '🔇';
-          musicPlaying = true;
+          audio
+            .play()
+            .then(() => {
+              icon.textContent = '🔇';
+              musicPlaying = true;
+            })
+            .catch((e) => console.log('Erro ao tocar música:', e));
         }
       }
 
       function loadMusic() {
         if (multimediaData.musicas.length > 0) {
           const musicUrl = multimediaData.musicas[0].url;
-
-          // Converter URL do YouTube para embed se necessário
-          let audioUrl = musicUrl;
-          if (
-            musicUrl.includes('youtube.com') ||
-            musicUrl.includes('youtu.be')
-          ) {
-            // Para YouTube, não podemos usar diretamente. Avisar no console.
-            console.log(
-              'Para música do YouTube, considere usar um link direto de arquivo MP3',
-            );
-          }
-
-          document.getElementById('music-source').src = audioUrl;
+          document.getElementById('music-source').src = musicUrl;
           document.getElementById('background-music').load();
+          console.log('🎵 Música carregada:', musicUrl);
         }
       }
 
@@ -715,7 +874,7 @@
           const container = document.getElementById('gallery-container');
           container.innerHTML = '';
 
-          multimediaData.fotos.forEach((foto, index) => {
+          multimediaData.fotos.forEach((foto) => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
             item.innerHTML = `<img src="${foto.url}" alt="${foto.descricao}" onclick="openPhotoModal('${foto.url}')">`;
