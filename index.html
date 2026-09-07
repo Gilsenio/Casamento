@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Confirmação de Presença - Casamento</title>
+    <title>💍 Nosso Casamento - Confirmação de Presença</title>
     <style>
       * {
         margin: 0;
@@ -12,29 +12,52 @@
       }
 
       body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: 'Georgia', 'Times New Roman', serif;
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
         min-height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
         padding: 20px;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Animação de pétalas caindo */
+      .petal {
+        position: fixed;
+        top: -10px;
+        width: 10px;
+        height: 10px;
+        background: rgba(255, 182, 193, 0.7);
+        border-radius: 50%;
+        animation: fall linear infinite;
+        z-index: 1;
+      }
+
+      @keyframes fall {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
       }
 
       .container {
         background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        max-width: 500px;
+        border-radius: 30px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
         width: 100%;
-        padding: 40px;
-        animation: fadeIn 0.5s ease;
+        padding: 50px 40px;
+        animation: fadeInUp 0.8s ease;
+        position: relative;
+        z-index: 10;
       }
 
-      @keyframes fadeIn {
+      @keyframes fadeInUp {
         from {
           opacity: 0;
-          transform: translateY(20px);
+          transform: translateY(30px);
         }
         to {
           opacity: 1;
@@ -44,18 +67,113 @@
 
       .header {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
+        position: relative;
+      }
+
+      .rings {
+        font-size: 60px;
+        margin-bottom: 20px;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
       }
 
       .header h1 {
-        color: #667eea;
-        font-size: 28px;
+        color: #d4526e;
+        font-size: 36px;
         margin-bottom: 10px;
+        font-weight: 400;
+        letter-spacing: 2px;
+      }
+
+      .header .names {
+        font-size: 28px;
+        color: #8b5a5f;
+        font-style: italic;
+        margin: 15px 0;
       }
 
       .header p {
         color: #666;
         font-size: 16px;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      .divider {
+        width: 100px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #d4526e, transparent);
+        margin: 20px auto;
+      }
+
+      /* Informações do evento */
+      .event-info {
+        background: linear-gradient(135deg, #fff5f7 0%, #ffe8ec 100%);
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        border: 2px solid #ffd6dd;
+      }
+
+      .event-info h3 {
+        color: #d4526e;
+        font-size: 20px;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .event-detail {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        font-family: 'Segoe UI', sans-serif;
+        color: #555;
+      }
+
+      .event-detail .icon {
+        font-size: 24px;
+        margin-right: 15px;
+        width: 30px;
+        text-align: center;
+      }
+
+      /* Contador regressivo */
+      .countdown {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin: 25px 0;
+        text-align: center;
+      }
+
+      .countdown-item {
+        background: white;
+        padding: 15px 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .countdown-number {
+        font-size: 32px;
+        font-weight: bold;
+        color: #d4526e;
+        display: block;
+      }
+
+      .countdown-label {
+        font-size: 12px;
+        color: #888;
+        text-transform: uppercase;
+        font-family: 'Segoe UI', sans-serif;
       }
 
       .form-group {
@@ -65,66 +183,76 @@
       label {
         display: block;
         margin-bottom: 8px;
-        color: #333;
+        color: #555;
         font-weight: 600;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 14px;
       }
 
       input,
       select,
       textarea {
         width: 100%;
-        padding: 12px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
+        padding: 14px;
+        border: 2px solid #ffd6dd;
+        border-radius: 12px;
         font-size: 16px;
-        transition: border-color 0.3s;
+        transition: all 0.3s;
+        font-family: 'Segoe UI', sans-serif;
       }
 
       input:focus,
       select:focus,
       textarea:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #d4526e;
+        box-shadow: 0 0 0 3px rgba(212, 82, 110, 0.1);
       }
 
       .btn {
         width: 100%;
-        padding: 14px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 16px;
+        background: linear-gradient(135deg, #d4526e 0%, #b8405e 100%);
         color: white;
         border: none;
-        border-radius: 8px;
+        border-radius: 12px;
         font-size: 18px;
         font-weight: 600;
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: all 0.3s;
+        font-family: 'Segoe UI', sans-serif;
+        box-shadow: 0 4px 15px rgba(212, 82, 110, 0.3);
       }
 
       .btn:hover {
         transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 82, 110, 0.4);
       }
 
       .btn:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+        transform: none;
       }
 
       .error {
-        background: #fee;
+        background: #ffe8ec;
         color: #c33;
-        padding: 12px;
-        border-radius: 8px;
+        padding: 15px;
+        border-radius: 12px;
         margin-bottom: 20px;
         border-left: 4px solid #c33;
+        font-family: 'Segoe UI', sans-serif;
       }
 
       .success {
-        background: #efe;
-        color: #3c3;
-        padding: 12px;
-        border-radius: 8px;
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 20px;
+        border-radius: 12px;
         margin-bottom: 20px;
-        border-left: 4px solid #3c3;
+        border-left: 4px solid #4caf50;
+        font-family: 'Segoe UI', sans-serif;
       }
 
       .hidden {
@@ -132,15 +260,22 @@
       }
 
       .guest-info {
-        background: #f5f5f5;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 20px;
+        background: linear-gradient(135deg, #fff5f7 0%, #ffe8ec 100%);
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        border: 2px solid #ffd6dd;
       }
 
       .guest-info h3 {
-        color: #667eea;
+        color: #d4526e;
         margin-bottom: 10px;
+        font-size: 22px;
+      }
+
+      .guest-info p {
+        color: #666;
+        font-family: 'Segoe UI', sans-serif;
       }
 
       .accompanist-inputs {
@@ -148,22 +283,22 @@
       }
 
       .accompanist-input {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
       }
 
       .loading {
         text-align: center;
-        padding: 20px;
+        padding: 40px 20px;
       }
 
       .spinner {
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid #667eea;
+        border: 4px solid #ffd6dd;
+        border-top: 4px solid #d4526e;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         animation: spin 1s linear infinite;
-        margin: 0 auto 15px;
+        margin: 0 auto 20px;
       }
 
       @keyframes spin {
@@ -177,20 +312,141 @@
 
       .info-box {
         background: #e3f2fd;
-        padding: 12px;
-        border-radius: 8px;
+        padding: 15px;
+        border-radius: 12px;
         margin-bottom: 20px;
         border-left: 4px solid #2196f3;
         font-size: 14px;
         color: #1565c0;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      .success-animation {
+        text-align: center;
+        font-size: 80px;
+        animation: scaleIn 0.5s ease;
+      }
+
+      @keyframes scaleIn {
+        from {
+          transform: scale(0);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .heart {
+        color: #d4526e;
+        animation: heartbeat 1.5s ease infinite;
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        10%,
+        30% {
+          transform: scale(1.1);
+        }
+        20%,
+        40% {
+          transform: scale(1);
+        }
+      }
+
+      /* Responsivo */
+      @media (max-width: 600px) {
+        .container {
+          padding: 30px 20px;
+        }
+
+        .header h1 {
+          font-size: 28px;
+        }
+
+        .header .names {
+          font-size: 22px;
+        }
+
+        .countdown {
+          gap: 10px;
+        }
+
+        .countdown-number {
+          font-size: 24px;
+        }
       }
     </style>
   </head>
   <body>
+    <!-- Pétalas caindo -->
+    <script>
+      // Criar pétalas animadas
+      for (let i = 0; i < 20; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.animationDuration = Math.random() * 3 + 5 + 's';
+        petal.style.animationDelay = Math.random() * 5 + 's';
+        document.body.appendChild(petal);
+      }
+    </script>
+
     <div class="container">
       <div class="header">
-        <h1>💍 Nosso Casamento</h1>
-        <p>Confirme sua presença</p>
+        <div class="rings">💍</div>
+        <h1>Nosso Casamento</h1>
+        <div class="names">Anilda Pereira da Veiga</div>
+        <div class="names">&</div>
+        <div class="names">António Semedo Dias</div>
+        <div class="divider"></div>
+        <p>Confirme sua presença no nosso grande dia!</p>
+      </div>
+
+      <!-- Informações do Evento -->
+      <div class="event-info">
+        <h3>📅 Detalhes do Evento</h3>
+        <div class="event-detail">
+          <span class="icon">📆</span>
+          <span><strong>Data:</strong> 19 de Dezembro de 2026</span>
+        </div>
+        <div class="event-detail">
+          <span class="icon">⏰</span>
+          <span><strong>Horário:</strong> 12:00H</span>
+        </div>
+        <div class="event-detail">
+          <span class="icon">📍</span>
+          <span
+            ><strong>Local:</strong> ESPAÇO MENO, entrada de São Martinho</span
+          >
+        </div>
+
+        <!-- Contador Regressivo -->
+        <h3 style="margin-top: 25px; margin-bottom: 15px; text-align: center">
+          ⏳ Contagem Regressiva
+        </h3>
+        <div class="countdown" id="countdown">
+          <div class="countdown-item">
+            <span class="countdown-number" id="days">0</span>
+            <span class="countdown-label">Dias</span>
+          </div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="hours">0</span>
+            <span class="countdown-label">Horas</span>
+          </div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="minutes">0</span>
+            <span class="countdown-label">Min</span>
+          </div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="seconds">0</span>
+            <span class="countdown-label">Seg</span>
+          </div>
+        </div>
       </div>
 
       <!-- Loading inicial -->
@@ -220,8 +476,10 @@
       <!-- Etapa 2: Formulário de Confirmação -->
       <div id="rsvp-step" class="hidden">
         <div class="guest-info">
-          <h3>Olá, <span id="guest-name"></span>!</h3>
-          <p>Ficamos felizes em tê-lo(a) conosco!</p>
+          <h3>
+            Olá, <span id="guest-name"></span>! <span class="heart">❤️</span>
+          </h3>
+          <p>Ficamos muito felizes em tê-lo(a) conosco neste dia especial!</p>
         </div>
 
         <form id="rsvp-form">
@@ -229,8 +487,8 @@
             <label for="attendance">Vai comparecer? *</label>
             <select id="attendance" required onchange="toggleAccompanists()">
               <option value="">Selecione...</option>
-              <option value="yes">Sim, estarei presente! 🎉</option>
-              <option value="no">Infelizmente não poderei ir 😢</option>
+              <option value="yes">✅ Sim, estarei presente!</option>
+              <option value="no">😢 Infelizmente não poderei ir</option>
             </select>
           </div>
 
@@ -245,21 +503,21 @@
             <div id="accompanist-names" class="accompanist-inputs"></div>
 
             <div class="form-group">
-              <label for="dietary">Restrições alimentares?</label>
+              <label for="dietary">🍽️ Restrições alimentares?</label>
               <textarea
                 id="dietary"
                 rows="3"
-                placeholder="Ex: vegetariano, alergia a frutos do mar, etc."
+                placeholder="Ex: vegetariano, alergia a frutos do mar, celíaco, etc."
               ></textarea>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="message">Mensagem para os noivos (opcional)</label>
+            <label for="message">💌 Mensagem para os noivos (opcional)</label>
             <textarea
               id="message"
               rows="3"
-              placeholder="Deixe uma mensagem carinhosa..."
+              placeholder="Deixe uma mensagem carinhosa para o casal..."
             ></textarea>
           </div>
 
@@ -273,25 +531,67 @@
 
       <!-- Etapa 3: Sucesso -->
       <div id="success-step" class="hidden">
+        <div class="success-animation">🎉</div>
         <div class="success">
-          <h2 style="margin-bottom: 10px">✅ Confirmação Enviada!</h2>
-          <p>Obrigado por confirmar. Aguardamos ansiosamente por você!</p>
+          <h2 style="margin-bottom: 15px; text-align: center">
+            ✅ Confirmação Enviada!
+          </h2>
+          <p style="text-align: center; font-size: 16px">
+            Obrigado por confirmar sua presença!<br />
+            Aguardamos ansiosamente por você no nosso grande dia!
+            <span class="heart">❤️</span>
+          </p>
         </div>
       </div>
     </div>
 
     <script>
       // ============================================
-      // CONFIGURAÇÃO - COLE A URL DO GOOGLE APPS SCRIPT AQUI
+      // CONFIGURAÇÃO
       // ============================================
       const SCRIPT_URL =
         'https://script.google.com/macros/s/AKfycbzJV5HcLp13pNrbPnMHa2hYxstKqcjdH58NRKlRaI7MWqn3fMUJtqsfD04gfwLORzAS/exec';
+
+      // DATA DO CASAMENTO - ALTERE AQUI
+      const WEDDING_DATE = new Date('2026-12-19T12:00:00');
 
       let guestList = {};
       let currentPhone = '';
       let currentGuest = null;
 
-      // Carregar lista de convidados ao iniciar
+      // ============================================
+      // CONTADOR REGRESSIVO
+      // ============================================
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = WEDDING_DATE.getTime() - now;
+
+        if (distance < 0) {
+          document.getElementById('countdown').innerHTML =
+            '<p style="text-align:center; color: #d4526e; font-weight: bold;">🎊 O grande dia chegou! 🎊</p>';
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById('days').textContent = days;
+        document.getElementById('hours').textContent = hours;
+        document.getElementById('minutes').textContent = minutes;
+        document.getElementById('seconds').textContent = seconds;
+      }
+
+      // Atualizar contador a cada segundo
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+
+      // ============================================
+      // CARREGAR LISTA DE CONVIDADOS
+      // ============================================
       window.addEventListener('load', loadGuestList);
 
       async function loadGuestList() {
@@ -311,10 +611,10 @@
         } catch (error) {
           console.error('Erro ao carregar convidados:', error);
           document.getElementById('initial-loading').innerHTML = `
-          <div class="error">
-            ❌ Erro ao carregar dados. Por favor, recarregue a página ou contacte os noivos.
-          </div>
-        `;
+            <div class="error">
+              ❌ Erro ao carregar dados. Por favor, recarregue a página ou contacte os noivos.
+            </div>
+          `;
         }
       }
 
@@ -351,13 +651,11 @@
 
         currentGuest = guestList[phone];
 
-        // Validação bem-sucedida
         errorDiv.classList.add('hidden');
         document.getElementById('validation-step').classList.add('hidden');
         document.getElementById('rsvp-step').classList.remove('hidden');
         document.getElementById('guest-name').textContent = currentGuest.name;
 
-        // Ajustar número máximo de acompanhantes
         const maxGuests = currentGuest.maxGuests;
         const select = document.getElementById('num-accompanists');
         select.innerHTML = '';
@@ -391,9 +689,9 @@
             const div = document.createElement('div');
             div.className = 'accompanist-input';
             div.innerHTML = `
-            <label for="accompanist-${i}">Nome do Acompanhante ${i} *</label>
-            <input type="text" id="accompanist-${i}" required placeholder="Nome completo">
-          `;
+              <label for="accompanist-${i}">Nome do Acompanhante ${i} *</label>
+              <input type="text" id="accompanist-${i}" required placeholder="Nome completo">
+            `;
             container.appendChild(div);
           }
         }
@@ -433,7 +731,6 @@
           };
 
           try {
-            // Usar GET com parâmetros para evitar CORS
             const url = `${SCRIPT_URL}?action=submit&data=${encodeURIComponent(JSON.stringify(formData))}`;
             const response = await fetch(url);
             const result = await response.json();
