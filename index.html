@@ -831,6 +831,26 @@
       let musicPlaying = false;
       let multimediaData = { musicas: [], fotos: [] };
 
+      // ✅ ARMAZENAR PARÂMETROS DA URL GLOBALMENTE
+      let urlPhone = '';
+      let urlCode = '';
+
+      // ============================================
+      // CAPTURAR PARÂMETROS DA URL IMEDIATAMENTE
+      // ============================================
+      (function captureURLParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlPhone = urlParams.get('tel') || '';
+        urlCode = urlParams.get('code') || '';
+
+        if (urlPhone || urlCode) {
+          console.log('📋 Parâmetros capturados da URL:', {
+            tel: urlPhone,
+            code: urlCode,
+          });
+        }
+      })();
+
       // ============================================
       // ENTRADA NO SITE E MÚSICA
       // ============================================
@@ -936,24 +956,27 @@
       updateCountdown();
 
       // ============================================
-      // CARREGAR DADOS E PARÂMETROS DA URL
+      // CARREGAR DADOS
       // ============================================
       window.addEventListener('load', function () {
         loadGuestList();
-        checkURLParams(); // NOVO: Verificar parâmetros da URL
       });
 
-      // NOVO: Verificar se há telefone e código na URL
-      function checkURLParams() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const phone = urlParams.get('tel');
-        const code = urlParams.get('code');
+      // ✅ PREENCHER CAMPOS APÓS CARREGAR DADOS
+      function fillURLParams() {
+        if (urlPhone || urlCode) {
+          const phoneInput = document.getElementById('phone');
+          const codeInput = document.getElementById('validation-code');
 
-        if (phone && code) {
-          // Preencher automaticamente os campos
-          document.getElementById('phone').value = phone;
-          document.getElementById('validation-code').value = code.toUpperCase();
-          console.log('✅ Dados preenchidos automaticamente da URL');
+          if (phoneInput && urlPhone) {
+            phoneInput.value = urlPhone;
+            console.log('✅ Telefone preenchido:', urlPhone);
+          }
+
+          if (codeInput && urlCode) {
+            codeInput.value = urlCode.toUpperCase();
+            console.log('✅ Código preenchido:', urlCode);
+          }
         }
       }
 
@@ -973,6 +996,9 @@
             document
               .getElementById('validation-step')
               .classList.remove('hidden');
+
+            // ✅ PREENCHER CAMPOS APÓS MOSTRAR O FORMULÁRIO
+            setTimeout(fillURLParams, 100);
           } else {
             throw new Error(data.error);
           }
