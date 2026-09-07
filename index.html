@@ -41,6 +41,22 @@
         }
       }
 
+      /* ✨ CONFETES */
+      .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        z-index: 9999;
+        pointer-events: none;
+      }
+
+      @keyframes confetti-fall {
+        to {
+          transform: translateY(100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
       .container {
         background: white;
         border-radius: 30px;
@@ -422,7 +438,6 @@
         box-shadow: 0 0 0 3px rgba(212, 82, 110, 0.1);
       }
 
-      /* NOVO: Estilo para código de validação */
       input[type='text']#validation-code {
         text-transform: uppercase;
         letter-spacing: 2px;
@@ -635,7 +650,7 @@
     </div>
 
     <!-- Audio Player (oculto) -->
-    <audio id="background-music" loop>
+    <audio id="background-music" loop preload="auto">
       <source id="music-source" src="" type="audio/mpeg" />
     </audio>
 
@@ -646,6 +661,7 @@
     </div>
 
     <script>
+      // Criar pétalas
       for (let i = 0; i < 20; i++) {
         const petal = document.createElement('div');
         petal.className = 'petal';
@@ -832,26 +848,52 @@
       let currentGuest = null;
       let musicPlaying = false;
       let multimediaData = { musicas: [], fotos: [] };
-
-      // ✅ ARMAZENAR PARÂMETROS DA URL GLOBALMENTE
       let urlPhone = '';
       let urlCode = '';
 
       // ============================================
-      // CAPTURAR PARÂMETROS DA URL IMEDIATAMENTE
+      // CAPTURAR PARÂMETROS DA URL
       // ============================================
       (function captureURLParams() {
         const urlParams = new URLSearchParams(window.location.search);
         urlPhone = urlParams.get('tel') || '';
         urlCode = urlParams.get('code') || '';
-
-        if (urlPhone || urlCode) {
-          console.log('📋 Parâmetros capturados da URL:', {
-            tel: urlPhone,
-            code: urlCode,
-          });
-        }
       })();
+
+      // ============================================
+      // FUNÇÃO DE CONFETES
+      // ============================================
+      function createConfetti() {
+        const colors = [
+          '#ff6b9d',
+          '#c44569',
+          '#ffa502',
+          '#ffd32a',
+          '#ff4757',
+          '#5f27cd',
+        ];
+        const confettiCount = 150;
+
+        for (let i = 0; i < confettiCount; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+
+          const size = Math.random() * 10 + 5;
+          confetti.style.width = size + 'px';
+          confetti.style.height = size + 'px';
+          confetti.style.backgroundColor =
+            colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.top = '-10px';
+          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+          confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+          confetti.style.animationDelay = Math.random() * 0.5 + 's';
+
+          document.body.appendChild(confetti);
+
+          setTimeout(() => confetti.remove(), 5000);
+        }
+      }
 
       // ============================================
       // ENTRADA NO SITE E MÚSICA
@@ -862,14 +904,28 @@
         document.getElementById('music-control').style.display = 'flex';
 
         const audio = document.getElementById('background-music');
-        audio
-          .play()
-          .then(() => {
-            console.log('✅ Música iniciada!');
-            document.getElementById('music-icon').textContent = '🔇';
-            musicPlaying = true;
-          })
-          .catch((e) => console.log('Erro:', e));
+        const musicSource = document.getElementById('music-source').src;
+
+        if (musicSource && musicSource !== '') {
+          audio
+            .play()
+            .then(() => {
+              console.log('✅ Música iniciada com sucesso!');
+              document.getElementById('music-icon').textContent = '🔇';
+              musicPlaying = true;
+            })
+            .catch((e) => {
+              console.log(
+                '⚠️ Não foi possível iniciar a música automaticamente:',
+                e,
+              );
+              console.log(
+                '💡 Isso é normal - alguns navegadores bloqueiam autoplay',
+              );
+            });
+        } else {
+          console.log('⚠️ Nenhuma música carregada ainda');
+        }
       }
 
       function toggleMusic() {
@@ -880,23 +936,27 @@
           audio.pause();
           icon.textContent = '🎵';
           musicPlaying = false;
+          console.log('⏸️ Música pausada');
         } else {
           audio
             .play()
             .then(() => {
               icon.textContent = '🔇';
               musicPlaying = true;
+              console.log('▶️ Música retomada');
             })
             .catch((e) => console.log('Erro ao tocar música:', e));
         }
       }
 
       function loadMusic() {
-        if (multimediaData.musicas.length > 0) {
+        if (multimediaData.musicas && multimediaData.musicas.length > 0) {
           const musicUrl = multimediaData.musicas[0].url;
           document.getElementById('music-source').src = musicUrl;
           document.getElementById('background-music').load();
           console.log('🎵 Música carregada:', musicUrl);
+        } else {
+          console.log('⚠️ Nenhuma música disponível na base de dados');
         }
       }
 
@@ -904,7 +964,7 @@
       // GALERIA DE FOTOS
       // ============================================
       function loadGallery() {
-        if (multimediaData.fotos.length > 0) {
+        if (multimediaData.fotos && multimediaData.fotos.length > 0) {
           document.getElementById('photo-gallery-section').style.display =
             'block';
           const container = document.getElementById('gallery-container');
@@ -961,10 +1021,10 @@
       // CARREGAR DADOS
       // ============================================
       window.addEventListener('load', function () {
+        console.log('🔄 Carregando dados...');
         loadGuestList();
       });
 
-      // ✅ PREENCHER CAMPOS APÓS CARREGAR DADOS
       function fillURLParams() {
         if (urlPhone || urlCode) {
           const phoneInput = document.getElementById('phone');
@@ -972,18 +1032,17 @@
 
           if (phoneInput && urlPhone) {
             phoneInput.value = urlPhone;
-            console.log('✅ Telefone preenchido:', urlPhone);
           }
 
           if (codeInput && urlCode) {
             codeInput.value = urlCode.toUpperCase();
-            console.log('✅ Código preenchido:', urlCode);
           }
         }
       }
 
       async function loadGuestList() {
         try {
+          console.log('📡 Buscando dados do servidor...');
           const response = await fetch(SCRIPT_URL);
           const data = await response.json();
 
@@ -999,13 +1058,12 @@
               .getElementById('validation-step')
               .classList.remove('hidden');
 
-            // ✅ PREENCHER CAMPOS APÓS MOSTRAR O FORMULÁRIO
             setTimeout(fillURLParams, 100);
           } else {
             throw new Error(data.error);
           }
         } catch (error) {
-          console.error('Erro ao carregar:', error);
+          console.error('❌ Erro ao carregar:', error);
           document.getElementById('initial-loading').innerHTML = `
             <div class="error">
               ❌ Erro ao carregar dados. Por favor, recarregue a página ou contacte os noivos.
@@ -1018,7 +1076,6 @@
         return phone.replace(/[\s\-+]/g, '').replace(/^351/, '');
       }
 
-      // MODIFICADO: Validação com código
       function validateGuest() {
         const phoneInput = document.getElementById('phone').value;
         const codeInput = document
@@ -1049,7 +1106,6 @@
           return;
         }
 
-        // NOVO: Verificar código de validação
         if (guestList[phone].code !== codeInput) {
           errorDiv.textContent =
             '🔐 Código de validação incorreto. Verifique o código no seu convite.';
@@ -1153,6 +1209,11 @@
               document
                 .getElementById('success-step')
                 .classList.remove('hidden');
+
+              // ✨ DISPARAR CONFETES!
+              createConfetti();
+              setTimeout(createConfetti, 300);
+              setTimeout(createConfetti, 600);
             } else {
               throw new Error(result.error);
             }
