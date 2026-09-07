@@ -1,5 +1,5 @@
 // ============================================
-// SCRIPT GOOGLE APPS SCRIPT - COM CÓDIGO DE VALIDAÇÃO
+// SCRIPT GOOGLE APPS SCRIPT
 // ============================================
 
 const SPREADSHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
@@ -23,13 +23,13 @@ function doGet(e) {
 
     const guests = {};
     for (let i = 1; i < guestData.length; i++) {
-      const phone = normalizePhone(guestData[i][0].toString());
+      const phone = normalizePhone(guestData[i][1].toString()); // Coluna B (índice 1)
       if (phone) {
         guests[phone] = {
-          name: guestData[i][1],
-          maxGuests: parseInt(guestData[i][2]) || 1,
-          code: guestData[i][3]?.toString().toUpperCase().trim() || '',
-          confirmed: guestData[i][4] === 'SIM',
+          name: guestData[i][0], // Coluna A (índice 0)
+          maxGuests: parseInt(guestData[i][2]) || 1, // Coluna C (índice 2)
+          code: guestData[i][3]?.toString().toUpperCase().trim() || '', // Coluna D (índice 3)
+          confirmed: guestData[i][4] === 'SIM', // Coluna E (índice 4)
         };
       }
     }
@@ -178,6 +178,22 @@ function handleSubmit(params) {
   }
 }
 
+// Função para capitalizar nomes
+function capitalizeName(name) {
+  return name
+    .toLowerCase()
+    .split(' ')
+    .map((word) => {
+      // Não capitalizar preposições comuns
+      const lowercase = ['de', 'da', 'do', 'dos', 'das', 'e'];
+      if (lowercase.includes(word)) {
+        return word;
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(' ');
+}
+
 // Processar a confirmação
 function processConfirmation(data) {
   try {
@@ -199,19 +215,24 @@ function processConfirmation(data) {
       ]);
     }
 
+    // Capitalizar nomes dos acompanhantes
+    const capitalizedAccompanists = data.accompanists.map((name) =>
+      capitalizeName(name),
+    );
+
     confirmSheet.appendRow([
       new Date(),
       data.phone,
       data.name,
       data.attendance === 'yes' ? 'SIM' : 'NÃO',
       data.numAccompanists,
-      data.accompanists.join(', '),
+      capitalizedAccompanists.join(', '),
       data.dietary || '',
       data.message || '',
     ]);
 
     updateGuestStatus(data.phone);
-    sendNotificationEmail(data);
+    sendNotificationEmail(data, capitalizedAccompanists);
 
     return ContentService.createTextOutput(
       JSON.stringify({ success: true }),
@@ -231,8 +252,9 @@ function updateGuestStatus(phone) {
   const normalizedPhone = normalizePhone(phone);
 
   for (let i = 1; i < data.length; i++) {
-    if (normalizePhone(data[i][0].toString()) === normalizedPhone) {
-      sheet.getRange(i + 1, 4).setValue('SIM');
+    if (normalizePhone(data[i][1].toString()) === normalizedPhone) {
+      // Coluna B (índice 1)
+      sheet.getRange(i + 1, 5).setValue('SIM'); // Coluna E (índice 5 no Range)
       break;
     }
   }
@@ -247,7 +269,7 @@ function normalizePhone(phone) {
 }
 
 // Enviar email de notificação
-function sendNotificationEmail(data) {
+function sendNotificationEmail(data, capitalizedAccompanists) {
   try {
     const email = 'gilsenio9413@gmail.com';
     const subject = '🎉 Nova Confirmação de Presença - Casamento';
@@ -259,7 +281,7 @@ Nova confirmação recebida:
 📱 Telefone: ${data.phone}
 ✅ Vai comparecer: ${data.attendance === 'yes' ? 'SIM' : 'NÃO'}
 👥 Total de pessoas: ${data.numAccompanists}
-👨‍👩‍👧‍👦 Acompanhantes: ${data.accompanists.join(', ') || 'Nenhum'}
+👨‍👩‍👧‍👦 Acompanhantes: ${capitalizedAccompanists.join(', ') || 'Nenhum'}
 🍽️ Restrições alimentares: ${data.dietary || 'Nenhuma'}
 💌 Mensagem: ${data.message || 'Nenhuma'}
 
