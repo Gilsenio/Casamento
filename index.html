@@ -1073,7 +1073,14 @@
       }
 
       function normalizePhone(phone) {
-        return phone.replace(/[\s\-+]/g, '').replace(/^351/, '');
+        return phone
+          .toString()
+          .replace(/[\s\-+]/g, '') // Remove espaços, hífens e +
+          .replace(/^00/, '') // Remove 00 do início
+          .replace(/^351/, '') // Remove 351 (Portugal)
+          .replace(/^238/, '') // Remove 238 (Cabo Verde)
+          .replace(/^244/, '') // Remove 244 (Angola)
+          .replace(/^55/, ''); // Remove 55 (Brasil)
       }
 
       function validateGuest() {
