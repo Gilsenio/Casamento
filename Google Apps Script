@@ -60,41 +60,48 @@ function getMultimediaData() {
     if (!multSheet) {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       multSheet = ss.insertSheet('Multimedia');
-      multSheet.appendRow(['Tipo', 'URL', 'Descrição']);
+      multSheet.appendRow(['Tipo', 'URL', 'Descrição', 'Active']);
       multSheet.appendRow([
         'musica',
         'https://www.dropbox.com/scl/fi/fyg9h4pmq2l93j0b6jqw0/Ed-Sheeran-Thinking-Out-Loud-Official-Music-Video.mp3?rlkey=m0fktn9hx6hnp7bjf9lo0q5g3&st=fdg22ekc&dl=1',
         'Nossa música',
+        'TRUE',
       ]);
       multSheet.appendRow([
         'foto',
         'https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'Foto padrão 1',
+        'TRUE',
       ]);
       multSheet.appendRow([
         'foto',
         'https://images.unsplash.com/photo-1542415719-96b33a38d73d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'Foto padrão 2',
+        'TRUE',
       ]);
       multSheet.appendRow([
         'foto',
         'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop',
         'Alianças de casamento',
+        'TRUE',
       ]);
       multSheet.appendRow([
         'foto',
         'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&h=600&fit=crop',
         'Casal apaixonado',
+        'TRUE',
       ]);
       multSheet.appendRow([
         'foto',
         'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&h=600&fit=crop',
         'Buquê de flores',
+        'TRUE',
       ]);
       multSheet.appendRow([
         'foto',
         'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800&h=600&fit=crop',
         'Decoração do casamento',
+        'TRUE',
       ]);
     }
 
@@ -108,8 +115,21 @@ function getMultimediaData() {
       const tipo = data[i][0].toString().toLowerCase().trim();
       let url = data[i][1].toString().trim();
       const descricao = data[i][2].toString().trim();
+      const active = data[i][3]; // Coluna D (índice 3) - Campo Active
 
-      if (!url) continue;
+      // ===== VERIFICAR SE ESTÁ ATIVO =====
+      const isActive =
+        active === true ||
+        active === 'TRUE' ||
+        active === 'true' ||
+        active === 'SIM' ||
+        active === 'sim' ||
+        active === 'Yes' ||
+        active === 'yes' ||
+        active === 1;
+
+      // Se não estiver ativo, pular para o próximo
+      if (!isActive || !url) continue;
 
       // ===== PROCESSAR URLs =====
 
@@ -247,12 +267,14 @@ function processConfirmation(data) {
 // ATUALIZAR STATUS DO CONVIDADO
 // ============================================
 function updateGuestStatus(phone) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Convidados');
+  const sheet =
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Convidados');
   const data = sheet.getDataRange().getValues();
   const normalizedPhone = normalizePhone(phone);
 
   for (let i = 1; i < data.length; i++) {
-    if (normalizePhone(data[i][2].toString()) === normalizedPhone) { // Coluna C (índice 2)
+    if (normalizePhone(data[i][2].toString()) === normalizedPhone) {
+      // Coluna C (índice 2)
       sheet.getRange(i + 1, 6).setValue('SIM'); // Coluna F (índice 6 no Range)
       break;
     }
@@ -266,11 +288,11 @@ function normalizePhone(phone) {
   return phone
     .toString()
     .replace(/[\s\-+]/g, '')
-    .replace(/^00/, '')      // Remove 00 do início
-    .replace(/^351/, '')     // Remove 351 (Portugal)
-    .replace(/^238/, '')     // Remove 238 (Cabo Verde)
-    .replace(/^244/, '')     // Remove 244 (Angola)
-    .replace(/^55/, '');     // Remove 55 (Brasil)
+    .replace(/^00/, '') // Remove 00 do início
+    .replace(/^351/, '') // Remove 351 (Portugal)
+    .replace(/^238/, '') // Remove 238 (Cabo Verde)
+    .replace(/^244/, '') // Remove 244 (Angola)
+    .replace(/^55/, ''); // Remove 55 (Brasil)
 }
 
 // Enviar email de notificação
